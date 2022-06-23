@@ -11,3 +11,25 @@ This is a bit like a sticky session for sharded users or tenants. if the user do
 The intention is to ultimately combine this with [Instagram's approach to ID generation](https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c?gi=4b7f98f4ba9d).
 
 You need a stable approach to generating the haproxy configuration file, you need to enumerate all logical shards and all physical servers in those shards.
+
+# installation
+
+This was developed on Ubuntu.
+
+Install redis, python3 and haproxy. I build haproxy from source with LUA 
+
+```
+sudo apt install liblua5.3-0
+sudo apt install lua5.3
+make TARGET=linux-glibc LUA_LIB=/usr/bin/lua5.3 LUA_INC=/usr/include/lua5.3/ LUA_LIB_NAME=lua5.3 USE_LUA=1
+```
+
+Run
+```
+sudo bash install.sh
+sudo bash start.sh
+sudo systemctl daemon-reload
+sudo service haproxy reload
+```
+
+Go to http://localhost:7000 and http://localhost:8404/stats and login with a number from 0-5 and password sam. You shall be load balanced servers that are part of a shard.
