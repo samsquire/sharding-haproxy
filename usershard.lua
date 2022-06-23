@@ -1,6 +1,6 @@
 local function shard(txn)
     shard = 'shard0'
-	local logicalshard = "0"
+    local logicalshard = "0"
     local tcp = core.tcp()
     local headers = txn.http:req_get_headers()
     if headers then
