@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+ln -s $(pwd)/haproxy.cfg /etc/haproxy/haproxy.cfg
 ln -s $(pwd)/usershard.lua /etc/haproxy/usershard.lua
 ln -s $(pwd)/haproxy.service /etc/systemd/system/haproxy.service
 
