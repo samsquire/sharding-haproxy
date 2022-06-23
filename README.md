@@ -33,3 +33,11 @@ sudo service haproxy reload
 ```
 
 Go to http://localhost:7000 and http://localhost:8404/stats and login with a number from 0-5 and password sam. You shall be load balanced servers that are part of a shard.
+
+# serious usage
+
+If you plan to use this approach, create an issue please to log your usage of this approach and your company name or website.
+
+If you were doing this seriously, you want a good quality approach to generating `shards.cfg` and you want to formalise the adding servers to a shard.
+
+You could use consul for service discovery but you need to have some runbook for assigning users to servers, it's partially a manual process. You also want to load balance neighbours or users so you need some kind of data movement procedure.
