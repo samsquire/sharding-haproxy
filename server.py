@@ -30,10 +30,11 @@ def shard(userid=""):
 
 @app.route("/main")
 def main():
-    session_cookie = request.cookies.get('session')
-    if session_cookie and r.hget(session_cookie, "logged_in"):
+    session_id = request.cookies.get('session')
+    if session_id and r.hget(session_id, "logged_in"):
         # logged in
-        username = r.hget(session_cookie, "logged_in")
+        username = r.hget(session_id, "username")
+        r.expire(session_id, time="60")
         return """
         Logged in as {} on shard {}
         """.format(username, args.shard)
@@ -57,7 +58,7 @@ def login():
     if users.get(safe_username) != None and safe_password == "sam": 
         session_id = uuid.uuid4().hex
         r.hset(session_id, "logged_in", "1") 
-        r.hset(session_id, "user", safe_username) 
+        r.hset(session_id, "username", safe_username) 
         resp = make_response(redirect("/main"))
         r.expire(session_id, time="60")
         resp.set_cookie('session', session_id)
