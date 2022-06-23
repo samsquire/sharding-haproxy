@@ -11,6 +11,7 @@ app = Flask(__name__)
 
 parser = ArgumentParser()
 parser.add_argument("--shard")
+parser.add_argument("--globalshard")
 args = parser.parse_args(os.environ["SHARD_ARGS"].split(" "))
 
 r = redis.Redis()
@@ -18,7 +19,8 @@ r = redis.Redis()
 @app.route("/")
 def shard(userid=""):
     session_cookie = request.cookies.get('session')
-    if session_cookie and r.hget(session_cookie, "logged_in"):
+    user_shard = request.cookies.get('username')
+    if user_shard and session_cookie and r.hget(session_cookie, "logged_in"):
         return redirect("/main")
     return """
     <form method="POST" action="/login">
@@ -31,13 +33,14 @@ def shard(userid=""):
 @app.route("/main")
 def main():
     session_id = request.cookies.get('session')
-    if session_id and r.hget(session_id, "logged_in"):
+    user_shard = request.cookies.get('username')
+    if user_shard and session_id and r.hget(session_id, "logged_in"):
         # logged in
         username = r.hget(session_id, "username")
         r.expire(session_id, time="60")
         return """
-        Logged in as {} on shard {}
-        """.format(username, args.shard)
+        Logged in as {} on logical shard {} on globalshard {}
+        """.format(username, args.shard, args.globalshard)
     else:
         return redirect("/")
     
@@ -62,6 +65,7 @@ def login():
         resp = make_response(redirect("/main"))
         r.expire(session_id, time="60")
         resp.set_cookie('session', session_id)
+        resp.set_cookie('username', safe_username)
         return resp 
     else:
         return "bad login"

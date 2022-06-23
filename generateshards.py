@@ -24,12 +24,12 @@ frontend frontend
     use_backend %[var(req.shard)]
 """)
 
-for shard in range(5):
+for shard in range(6):
     print("""
 backend shard{}
     mode http\n""".format(shard))
     for server in range(3):
         print("""    server {}_{} 127.0.0.1:{} check\n""".format(
-        shard, server, start_port + shard))
+        shard, server, start_port))
         start_port = start_port + 1
 
