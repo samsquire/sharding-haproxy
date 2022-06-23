@@ -1,0 +1,10 @@
+[Unit]
+Description=haproxy
+
+[Service]
+ExecStart=/usr/local/sbin/haproxy -f /etc/haproxy/haproxy.cfg -f /etc/haproxy/shards.cfg
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
