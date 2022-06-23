@@ -1,6 +1,6 @@
 local function shard(txn)
     shard = 'shard0'
-
+	local logicalshard = "0"
     local tcp = core.tcp()
     local headers = txn.http:req_get_headers()
     if headers then
@@ -14,32 +14,31 @@ local function shard(txn)
 				
 					print("User has a shard cookie")
 					print(found_cookie)
-					shard = "shard" .. string.gsub(found_cookie, "[^a-zA-Z0-9]+", "")
+					logicalshard =  string.gsub(found_cookie, "[^a-zA-Z0-9]+", "")
 				end
 			end
-	else
-		tcp:settimeout(1)
-		if tcp:connect("127.0.0.1", "5000") then
-		  if tcp:send("GET /shards/0 HTTP/1.1\r\nconnection: close\r\n\r\n") then
-			while true do
-				local line, _ = tcp:receive('*l')
+			tcp:settimeout(1)
+			if tcp:connect("127.0.0.1", "5000") then
+			  if tcp:send("GET /shards/" .. logicalshard .." HTTP/1.1\r\nconnection: close\r\n\r\n") then
+				while true do
+					local line, _ = tcp:receive('*l')
 
-				if not line then break end
-				if line == '' then break end
+					if not line then break end
+					if line == '' then break end
+				end
+				local line, _ = tcp:receive('*a')
+
+				shard = "shard" .. line
+			  end
+			  tcp:close()
+			else
+			  print('Socket connection to shardserver failed')
 			end
-			local line, _ = tcp:receive('*a')
+			print('Shard is', shard)
+			print(txn.http)
 
-			shard = "shard" .. line
-		  end
-		  tcp:close()
-		else
-		  print('Socket connection failed')
-		end
-		print('Shard is', shard)
-		print(txn.http)
-
+			end	
 		end	
-	end	
 	txn:set_var('req.shard', shard)
 end
 
