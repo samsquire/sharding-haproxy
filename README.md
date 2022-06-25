@@ -29,7 +29,7 @@ Run
 sudo bash install.sh
 sudo bash start.sh
 sudo systemctl daemon-reload
-sudo service haproxy reload
+sudo service haproxy restart
 ```
 
 Go to http://localhost:7000 and http://localhost:8404/stats and login with a number from 0-5 and password sam. You shall be load balanced servers that are part of a shard.
